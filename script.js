@@ -5,8 +5,23 @@ let searchTimeout; // Timeout für das Debouncing
 
 // Fuse.js Optionen
 const options = {
-  keys: ["brand", "name", "family"], // Füge "family" hinzu
-  threshold: 0.3 // Wie präzise die Übereinstimmung sein soll
+  includeScore: true, // Zeigt den Score an, damit wir sehen, wie relevant jedes Ergebnis ist
+  shouldSort: true,   // Sortiert die Ergebnisse nach Relevanz
+  threshold: 0.6,     // Eine niedrigere Schwelle, damit nur sehr exakte Übereinstimmungen stärker gewichtet werden
+  keys: [
+    {
+      name: "brand",
+      weight: 0.3 // Gewicht für die Marke
+    },
+    {
+      name: "name",
+      weight: 0.3 // Höheres Gewicht für den Namen
+    },
+    {
+      name: "combined",
+      weight: 4.0 // Die Kombination von Marke und Name hat das höchste Gewicht
+    }
+  ]
 };
 
 // Lade die Parfüm-Daten aus der externen JSON-Datei
@@ -83,62 +98,78 @@ function displayResults(results) {
   } else {
     results.forEach(perfume => {
       const resultItem = document.createElement('div');
-      resultItem.className = "flex justify-between bg-white space-x-4 mb-4 p-4 border rounded-lg shadow-sm";
+      resultItem.className = "grid grid-cols-[6rem_auto] gap-2 rounded-md border border-gray-300 p-2 text-slate-800 mb-4";
 
-      // Erstelle den div-Platzhalter für das Bild
+      // Bildbereich
       const imagePlaceholder = document.createElement('div');
-      imagePlaceholder.className = "size-24 -m-2 shadow-lg bg-gray-200 rounded overflow-hidden"; // overflow-hidden stellt sicher, dass das Bild den runden Rahmen nicht verlässt
+      imagePlaceholder.className = "relative size-24 overflow-hidden rounded-md bg-green-200";
       resultItem.appendChild(imagePlaceholder);
 
-      // Erstelle das img-Element und setze die Bildquelle und den Alt-Text
       const imageElement = document.createElement('img');
       imageElement.src = perfume.img ? perfume.img : ''; // Falls keine Bild-URL vorhanden ist, bleibt das src leer
-      imageElement.alt = 'no image'; // Alt-Text
-      imageElement.className = "w-full h-full object-cover"; // Bild passt sich dem div an und object-fit sorgt für das Cover-Verhalten
-
-      // Füge das img-Element in den Platzhalter ein
+      imageElement.alt = 'no image';
+      imageElement.className = "absolute h-full w-full object-cover";
       imagePlaceholder.appendChild(imageElement);
 
-      const textContainer = document.createElement('div');
-      textContainer.className = "flex flex-col grow pl-2";
+      // Optionaler Tag für Geschlecht oder andere Details unten links
+      const genderTag = document.createElement('div');
 
-      const brandText = document.createElement('span');
-      brandText.textContent = perfume.brand;
-      brandText.className = "text-sm text-gray-500";
-      textContainer.appendChild(brandText);
+      let gender = "X";
+      genderTag.className = "absolute bottom-0 left-0 flex size-5 items-center justify-center rounded-tr-md bg-green-500 text-[10px] text-white";
 
-      const nameText = document.createElement('span');
-      nameText.textContent = perfume.name;
-      nameText.className = "text-lg text-gray-800 font-semibold";
-      textContainer.appendChild(nameText);
+      if(perfume.gender.charAt(0).toUpperCase() === "M"){
+        gender = "M"
+        genderTag.className = "absolute bottom-0 left-0 flex size-5 items-center justify-center rounded-tr-md bg-blue-500 text-[10px] text-white";
 
-      const familyGenderText = document.createElement('span');
-      familyGenderText.className = "text-sm text-gray-600 flex items-center";
+      }
+      if(perfume.gender.charAt(0).toUpperCase() === "F"){
+        gender = "W"
+        genderTag.className = "absolute bottom-0 left-0 flex size-5 items-center justify-center rounded-tr-md bg-pink-500 text-[10px] text-white";
 
-      // Kreis basierend auf dem Geschlecht
-      const genderCircle = document.createElement('span');
-      genderCircle.className = "inline-block w-3 h-3 rounded-full mr-2";
-
-      // Farben für die Geschlechter
-      if (perfume.gender === 'male') {
-        genderCircle.style.backgroundColor = 'blue'; // Blauer Kreis für männlich
-      } else if (perfume.gender === 'female') {
-        genderCircle.style.backgroundColor = 'pink'; // Rosafarbener Kreis für weiblich
-      } else if (perfume.gender === 'unisex') {
-        genderCircle.style.backgroundColor = 'darkgoldenrod'; // Dunkelgelber Kreis für Unisex
       }
 
-      familyGenderText.appendChild(genderCircle);
-      familyGenderText.appendChild(document.createTextNode(`${perfume.family}`)); // Familie anzeigen
-      textContainer.appendChild(familyGenderText);
 
+      genderTag.textContent = gender;
+      imagePlaceholder.appendChild(genderTag);
+
+      // Textbereich
+      const textContainer = document.createElement('div');
       resultItem.appendChild(textContainer);
 
-      const priceText = document.createElement('div');
-      priceText.className = "text-right";
-      priceText.innerHTML = `<span class="text-sm text-gray-600">Günstigster Preis</span><br><span class="text-xl font-bold text-gray-800">€${perfume.price ? perfume.price.toFixed(2) : 'n.a.'}</span>`;
-      resultItem.appendChild(priceText);
+      const nameText = document.createElement('h2');
+      nameText.textContent = perfume.name;
+      nameText.className = "text-lg font-bold";
+      textContainer.appendChild(nameText);
 
+      const inspiredText = document.createElement('p');
+      inspiredText.textContent = 'Inspiriert von';
+      inspiredText.className = "text-xs text-gray-400";
+      textContainer.appendChild(inspiredText);
+
+      const brandText = document.createElement('p');
+      brandText.textContent = perfume.brand ? perfume.brand : 'Unbekannt';
+      brandText.className = "-mt-0.5 text-sm text-gray-800";
+      textContainer.appendChild(brandText);
+
+      const familyGenderText = document.createElement('p');
+      familyGenderText.textContent = `Duftrichtung: ${perfume.family ? perfume.family : 'n.a.'}`;
+      familyGenderText.className = "mt-2 text-xs text-gray-400";
+      textContainer.appendChild(familyGenderText);
+
+      // Preis und Button
+      const footer = document.createElement('div');
+      footer.className = "col-span-2 flex items-center justify-between mt-2";
+      
+      const priceText = document.createElement('p');
+      priceText.innerHTML = `ab €${perfume.price ? perfume.price.toFixed(2) : '9.90'}<span class="inline-block scale-75 rounded-full bg-slate-100 p-1 px-2 text-xs text-gray-400">10 ml</span>`;
+      footer.appendChild(priceText);
+
+      const button = document.createElement('button');
+      button.className = "inline-flex flex-row-reverse items-center gap-1 rounded-full bg-green-100 fill-white stroke-green-600 stroke-1 p-1 px-3 text-sm font-light text-green-700 hover:bg-slate-100 hover:text-slate-700";
+      button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-4"><path stroke-width="1.5" d="M9.15 5.4C10.42 3.15 11.05 2 12 2c.95 0 1.58 1.14 2.85 3.4l.32.6c.36.64.54.96.83 1.18.28.21.63.29 1.32.45l.64.14c2.46.56 3.69.84 3.98 1.78.3.94-.54 1.92-2.22 3.88l-.43.5c-.48.56-.72.84-.83 1.19-.1.34-.07.71 0 1.46l.07.67c.25 2.62.38 3.93-.39 4.51-.76.58-1.91.05-4.22-1l-.6-.28c-.65-.3-.97-.46-1.32-.46-.35 0-.67.16-1.33.46l-.6.27c-2.3 1.06-3.45 1.6-4.21 1.01-.77-.58-.64-1.89-.4-4.5l.07-.68c.08-.75.11-1.12 0-1.46-.1-.35-.34-.63-.82-1.18l-.43-.51c-1.68-1.96-2.52-2.94-2.22-3.88.29-.94 1.52-1.22 3.98-1.78l.64-.14c.7-.16 1.04-.24 1.32-.45.29-.22.47-.54.83-1.18l.32-.6Z" /></svg><span class="text-xs font-light uppercase">gemerkt</span>`;
+      footer.appendChild(button);
+
+      resultItem.appendChild(footer);
       resultsDiv.appendChild(resultItem);
     });
   }
