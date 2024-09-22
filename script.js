@@ -16,11 +16,11 @@ const options = {
     },
     {
       name: "name",
-      weight: 0.3 // Höheres Gewicht für den Namen
+      weight: 0.65 // Höheres Gewicht für den Namen
     },
     {
       name: "combined",
-      weight: 4.0 // Die Kombination von Marke und Name hat das höchste Gewicht
+      weight: 1.0 // Die Kombination von Marke und Name hat das höchste Gewicht
     }
   ]
 };
@@ -119,9 +119,10 @@ function displayResults(results) {
   if (results.length === 0) {
     resultsDiv.innerHTML = '<p class="text-gray-500">Keine Ergebnisse gefunden.</p>';
   } else {
+    
     results.forEach(perfume => {
       const resultItem = document.createElement('div');
-      resultItem.className = "grid grid-cols-[6rem_auto] gap-2 rounded-md border border-gray-300 p-2 text-slate-800 mb-4";
+      resultItem.className = "grid grid-cols-[6rem_auto] gap-2 rounded-md border border-gray-300 p-2 text-slate-800 mb-4 bg-white shadow-sm";
 
       // Bildbereich
       const imagePlaceholder = document.createElement('div');
@@ -229,10 +230,10 @@ function filterByGender(gender) {
   searchPerfumes();
 
   // Alle Buttons zurücksetzen (weiß mit grauem Text)
-  document.getElementById('btn-all').classList.remove('bg-black', 'text-white');
-  document.getElementById('btn-w').classList.remove('bg-black', 'text-white');
-  document.getElementById('btn-m').classList.remove('bg-black', 'text-white');
-  document.getElementById('btn-x').classList.remove('bg-black', 'text-white');
+  document.getElementById('btn-all').classList.remove('bg-[#38393a]', 'text-white');
+  document.getElementById('btn-w').classList.remove('bg-[#38393a]', 'text-white');
+  document.getElementById('btn-m').classList.remove('bg-[#38393a]', 'text-white');
+  document.getElementById('btn-x').classList.remove('bg-[#38393a]', 'text-white');
 
   document.getElementById('btn-all').classList.add('bg-white', 'text-gray-800');
   document.getElementById('btn-w').classList.add('bg-white', 'text-gray-800');
@@ -241,16 +242,16 @@ function filterByGender(gender) {
 
   // Ausgewählten Button hervorheben (schwarz mit weißem Text)
   if (gender === 'all') {
-    document.getElementById('btn-all').classList.add('bg-black', 'text-white');
+    document.getElementById('btn-all').classList.add('bg-[#38393a]', 'text-white');
     document.getElementById('btn-all').classList.remove('bg-white', 'text-gray-800');
   } else if (gender === 'female') {
-    document.getElementById('btn-w').classList.add('bg-black', 'text-white');
+    document.getElementById('btn-w').classList.add('bg-[#38393a]', 'text-white');
     document.getElementById('btn-w').classList.remove('bg-white', 'text-gray-800');
   } else if (gender === 'male') {
-    document.getElementById('btn-m').classList.add('bg-black', 'text-white');
+    document.getElementById('btn-m').classList.add('bg-[#38393a]', 'text-white');
     document.getElementById('btn-m').classList.remove('bg-white', 'text-gray-800');
   } else if (gender === 'unisex') {
-    document.getElementById('btn-x').classList.add('bg-black', 'text-white');
+    document.getElementById('btn-x').classList.add('bg-[#38393a]', 'text-white');
     document.getElementById('btn-x').classList.remove('bg-white', 'text-gray-800');
   }
 }
