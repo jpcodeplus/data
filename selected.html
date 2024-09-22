@@ -16,21 +16,19 @@
     <meta name="msapplication-TileColor" content="#00aba9">
     <meta name="msapplication-config" content="/img/fav/browserconfig.xml">
     <meta name="theme-color" content="#3d3b3b">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="bg-gradient-to-tr from-slate-200 to-slate-100 min-h-screen bg-fixed text-[#38393a]">
-  <img src="img/flaverio-logo-full.svg" class=" mx-auto h-24 my-6" alt="">
+  <img src="img/flaverio-logo-full.svg" class="mx-auto h-24 my-6" alt="">
 
-  <h1 class="sticky py-3 flex items-center gap-2 top-0 bg-gradient-to-t from-white to-transparent z-10 shadow-sm backdrop-blur-md	">
+  <h1 class="sticky py-3 flex items-center gap-2 top-0 bg-gradient-to-t from-white to-transparent z-10 shadow-sm backdrop-blur-md">
     <a href="index.html" class="flex bg-[#38393a] rounded-e-full">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" class="h-8 ml-1 mr-2" viewBox="0 0 24 24">
         <path stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m0 0 6 6m-6-6 6-6"/>
       </svg>
     </a>
-  </span>
-  <span class="text-xl font-semibold">Gemerkt Düfte</span>
+    <span class="text-xl font-semibold">Gemerkt Düfte</span>
   </h1>
   <div id="perfume-list" class="space-y-4"></div>
   <div class="mt-8">
@@ -72,24 +70,24 @@
         selectedQuantities[perfume.id] = { "10ml": 0, "30ml": 0, "50ml": 0 };
 
         const perfumeItemDiv = document.createElement('div');
-        perfumeItemDiv.className = 'bg-white p-4 rounded-lg shadow-md';
+        perfumeItemDiv.className = 'rounded-lg bg-white p-4 shadow-md';
 
         // Bildbereich und Info
         const itemHeader = document.createElement('div');
         itemHeader.className = 'flex justify-between items-center';
 
         const imagePlaceholder = document.createElement('div');
-        imagePlaceholder.className = 'w-16 h-16 rounded-md overflow-hidden bg-gray-200'; // Verkleinertes Bild
+        imagePlaceholder.className = 'h-16 w-16 overflow-hidden rounded-md bg-gray-200'; // Verkleinertes Bild
         if (perfume.img) {
           const imageElement = document.createElement('img');
-          imageElement.src = perfume.img;
-          imageElement.className = 'w-full h-full object-cover';
+          imageElement.src = perfume.img || 'img/no-img.jpg'; // Standardbild, falls kein Bild vorhanden
+          imageElement.className = 'h-full w-full object-cover';
           imagePlaceholder.appendChild(imageElement);
         }
         itemHeader.appendChild(imagePlaceholder);
 
         const textContainer = document.createElement('div');
-        textContainer.className = 'flex-1 ml-4';
+        textContainer.className = 'ml-4 flex-1';
 
         const inspiredText = document.createElement('p');
         inspiredText.className = 'text-sm text-gray-500 italic';
@@ -108,114 +106,106 @@
 
         itemHeader.appendChild(textContainer);
 
-        const toggleButton = document.createElement('button');
-        toggleButton.className = 'text-blue-500';
-        toggleButton.textContent = 'Mengen anpassen';
-        toggleButton.addEventListener('click', () => toggleQuantitySection(perfume.id));
-        itemHeader.appendChild(toggleButton);
+        // Bestellen- und Entfernen-Buttons
+        const actionButtonsDiv = document.createElement('div');
+        actionButtonsDiv.className = 'mt-2.5 flex items-center justify-between';
+
+        const removeButton = document.createElement('button');
+        removeButton.className = 'rounded-md bg-red-200 px-2 py-1 text-xs text-red-500';
+        removeButton.textContent = 'Entfernen';
+        removeButton.addEventListener('click', () => removePerfume(perfume.id));
+        actionButtonsDiv.appendChild(removeButton);
+
+        const orderButton = document.createElement('button');
+        orderButton.className = 'rounded-md bg-gray-200 px-2 py-1 text-xs text-gray-600';
+        orderButton.textContent = 'Bestellen';
+        orderButton.addEventListener('click', () => toggleQuantitySection(perfume.id));
+        actionButtonsDiv.appendChild(orderButton);
 
         perfumeItemDiv.appendChild(itemHeader);
+        perfumeItemDiv.appendChild(actionButtonsDiv);
 
         // Dropdown für Größe und Menge (wird initial ausgeblendet)
         const quantitySection = document.createElement('div');
-        quantitySection.className = 'mt-4 space-y-4 hidden';
+        quantitySection.className = 'order-box hidden';
         quantitySection.id = `quantity-section-${perfume.id}`;
 
+        const hr = document.createElement('hr');
+        hr.className = 'block py-1';
+        quantitySection.appendChild(hr);
+
+        const extraitText = document.createElement('h3');
+        extraitText.textContent = 'Extrait de Parfume';
+        quantitySection.appendChild(extraitText);
+
+        const idText = document.createElement('h4');
+        idText.className = 'text-xs text-gray-400';
+        idText.textContent = `Von Flaverio (ID: ${perfume.id})`;
+        quantitySection.appendChild(idText);
+
+        const sizeContainer = document.createElement('div');
+        sizeContainer.className = 'mt-1 flex items-center';
+
+        const sizeButtonsContainer = document.createElement('div');
+        sizeButtonsContainer.className = 'flex gap-2 px-0.5 text-xs *:rounded-md *:px-2 *:py-0.5 size-buttons';
         ['10ml', '30ml', '50ml'].forEach(size => {
-          const sizeDiv = document.createElement('div');
-          sizeDiv.className = 'flex items-center justify-between';
-
-          const sizeLabel = document.createElement('label');
-          sizeLabel.className = 'text-gray-700';
-          sizeLabel.textContent = `${size}`;
-          sizeDiv.appendChild(sizeLabel);
-
-          const priceSpan = document.createElement('span');
-          priceSpan.className = 'text-gray-500';
-          priceSpan.textContent = getPriceLabel(size, 1); // Initialpreis für 1 Produkt
-          sizeDiv.appendChild(priceSpan);
-
-          const quantityInput = document.createElement('input');
-          quantityInput.type = 'number';
-          quantityInput.value = 0;
-          quantityInput.min = 0;
-          quantityInput.className = 'border border-gray-300 rounded-md w-16 text-right p-1';
-          quantityInput.addEventListener('input', (e) => {
-            const quantity = parseInt(e.target.value) || 0;
-            selectedQuantities[perfume.id][size] = quantity;
-            updateTotalPrice();
-          });
-          sizeDiv.appendChild(quantityInput);
-
-          quantitySection.appendChild(sizeDiv);
+          const sizeBtn = document.createElement('span');
+          sizeBtn.className = `size-btn bg-${size === '10ml' ? 'black' : 'gray-200'} text-${size === '10ml' ? 'white' : 'black'}`;
+          sizeBtn.textContent = size;
+          sizeBtn.dataset.price = size === '10ml' ? '9.90' : size === '30ml' ? '19.90' : '29.90';
+          sizeBtn.onclick = () => updatePrice(perfume.id, sizeBtn);
+          sizeButtonsContainer.appendChild(sizeBtn);
         });
 
-        perfumeItemDiv.appendChild(quantitySection);
+        sizeContainer.appendChild(sizeButtonsContainer);
 
-        const removeButton = document.createElement('button');
-        removeButton.className = 'mt-4 bg-red-500 text-white rounded-md px-4 py-2';
-        removeButton.textContent = 'Entfernen';
-        removeButton.onclick = () => removePerfume(perfume.id);
-        perfumeItemDiv.appendChild(removeButton);
+        const qtyContainer = document.createElement('div');
+        qtyContainer.className = 'ml-auto flex items-center gap-1';
+
+        const minusButton = document.createElement('button');
+        minusButton.className = 'size-7 rounded-full bg-gray-200 qty-minus';
+        minusButton.textContent = '-';
+        minusButton.onclick = () => updateQuantity(perfume.id, -1);
+
+        const qtyInput = document.createElement('input');
+        qtyInput.className = 'w-16 rounded-full border border-gray-300 p-1 text-center qty-input';
+        qtyInput.type = 'number';
+        qtyInput.value = 0;
+        qtyInput.min = 0;
+        qtyInput.oninput = () => updateTotalPrice(perfume.id);
+
+        const plusButton = document.createElement('button');
+        plusButton.className = 'size-7 rounded-full bg-gray-200 qty-plus';
+        plusButton.textContent = '+';
+        plusButton.onclick = () => updateQuantity(perfume.id, 1);
+
+        qtyContainer.appendChild(minusButton);
+        qtyContainer.appendChild(qtyInput);
+        qtyContainer.appendChild(plusButton);
+
+        sizeContainer.appendChild(qtyContainer);
+        quantitySection.appendChild(sizeContainer);
+
+        const totalPriceContainer = document.createElement('div');
+        totalPriceContainer.className = 'mt-3 flex items-center';
+        const totalPrice = document.createElement('div');
+        totalPrice.className = 'flex gap-2 px-0.5 text-xl *:rounded-full *:px-1.5 total-price';
+        totalPrice.textContent = '€ 9.90';
+        totalPrice.id = `total-price-${perfume.id}`;
+        totalPriceContainer.appendChild(totalPrice);
+
+        const addToCartButton = document.createElement('button');
+        addToCartButton.className = 'h-10 rounded-full border-b-2 border-orange-600 bg-orange-400 px-4 text-sm';
+        addToCartButton.textContent = 'In den Warenkorb';
+        totalPriceContainer.appendChild(addToCartButton);
+
+        quantitySection.appendChild(totalPriceContainer);
+        perfumeItemDiv.appendChild(quantitySection);
 
         perfumeListDiv.appendChild(perfumeItemDiv);
       });
 
       updateTotalPrice();
-    }
-
-    // Funktion zum Berechnen und Anzeigen der Gesamtsumme
-    function updateTotalPrice() {
-      let totalPrice = 0;
-      Object.keys(selectedQuantities).forEach(perfumeId => {
-        const quantities = selectedQuantities[perfumeId];
-        const totalQuantity = quantities['10ml'] + quantities['30ml'] + quantities['50ml'];
-
-        // Preisstaffelung basierend auf der Anzahl der ausgewählten Produkte
-        let price10ml = 14.90;
-        let price30ml = 24.90;
-        let price50ml = 34.90;
-
-        if (totalQuantity === 2) {
-          price10ml = 12.90;
-          price30ml = 22.90;
-          price50ml = 32.90;
-        } else if (totalQuantity > 2) {
-          price10ml = 9.90;
-          price30ml = 19.90;
-          price50ml = 29.90;
-        }
-
-        // Berechnung für jede Größe
-        totalPrice += quantities['10ml'] * price10ml;
-        totalPrice += quantities['30ml'] * price30ml;
-        totalPrice += quantities['50ml'] * price50ml;
-
-        // Aktualisiere die Preislabels in der Liste
-        document.querySelector(`#quantity-section-${perfumeId} div:nth-child(1) span`).textContent = getPriceLabel('10ml', totalQuantity);
-        document.querySelector(`#quantity-section-${perfumeId} div:nth-child(2) span`).textContent = getPriceLabel('30ml', totalQuantity);
-        document.querySelector(`#quantity-section-${perfumeId} div:nth-child(3) span`).textContent = getPriceLabel('50ml', totalQuantity);
-      });
-
-      document.getElementById('total-price').textContent = totalPrice.toFixed(2);
-    }
-
-    // Preisetikett basierend auf der Menge
-    function getPriceLabel(size, totalQuantity) {
-      if (size === '10ml') {
-        if (totalQuantity === 2) return '€12.90';
-        if (totalQuantity > 2) return '€9.90';
-        return '€14.90';
-      } else if (size === '30ml') {
-        if (totalQuantity === 2) return '€22.90';
-        if (totalQuantity > 2) return '€19.90';
-        return '€24.90';
-      } else if (size === '50ml') {
-        if (totalQuantity === 2) return '€32.90';
-        if (totalQuantity > 2) return '€29.90';
-        return '€34.90';
-      }
-      return '';
     }
 
     // Funktion zum Umschalten des Dropdowns für die Menge
@@ -224,14 +214,43 @@
       section.classList.toggle('hidden');
     }
 
-    // Funktion zum Entfernen einer ID aus dem localStorage
+    // Funktion zum Anpassen des Preises basierend auf der ausgewählten Größe
+    function updatePrice(id, selectedButton) {
+      const price = selectedButton.dataset.price;
+      const allButtons = selectedButton.parentElement.querySelectorAll('span');
+      allButtons.forEach(button => {
+        button.classList.remove('bg-black', 'text-white');
+        button.classList.add('bg-gray-200', 'text-black');
+      });
+      selectedButton.classList.add('bg-black', 'text-white');
+      document.getElementById(`total-price-${id}`).textContent = `€ ${price}`;
+      updateTotalPrice();
+    }
+
+    // Funktion zum Aktualisieren der Menge
+    function updateQuantity(id, delta) {
+      const qtyInput = document.querySelector(`#quantity-section-${id} .qty-input`);
+      const currentQty = parseInt(qtyInput.value) || 0;
+      qtyInput.value = Math.max(0, currentQty + delta);
+      updateTotalPrice(id);
+    }
+
+    // Funktion zum Berechnen und Anzeigen der Gesamtsumme
+    function updateTotalPrice() {
+      let totalPrice = 0;
+      Object.keys(selectedQuantities).forEach(perfumeId => {
+        const priceText = document.getElementById(`total-price-${perfumeId}`).textContent.replace('€ ', '');
+        totalPrice += parseFloat(priceText) || 0;
+      });
+      document.getElementById('total-price').textContent = totalPrice.toFixed(2);
+    }
+
+    // Funktion zum Entfernen eines Parfüms
     function removePerfume(id) {
       let savedPerfumeIds = JSON.parse(localStorage.getItem('savedPerfumes')) || [];
       savedPerfumeIds = savedPerfumeIds.filter(savedId => savedId !== id);
       localStorage.setItem('savedPerfumes', JSON.stringify(savedPerfumeIds));
-
-      // Aktualisiere die Liste nach dem Entfernen
-      loadSavedPerfumes();
+      loadSavedPerfumes(); // Aktualisiere die Liste
     }
 
     // Lade die Parfümdaten und gespeicherten Artikel
