@@ -2,6 +2,7 @@ let perfumes = [];
 let fuse;
 let selectedGender = 'all'; // Standard: Alle Gender
 let searchTimeout; // Timeout für das Debouncing
+let savedPerfumeIds = JSON.parse(localStorage.getItem('savedPerfumes')) || []; // IDs der gespeicherten Parfüms
 
 // Fuse.js Optionen
 const options = {
@@ -33,6 +34,7 @@ async function loadPerfumeData() {
   } catch (error) {
     console.error('Fehler beim Laden der Parfüm-Daten:', error);
   }
+  updateSavedPerfumeCount(); // Aktualisiere den Zähler nach dem Laden der Seite
 }
 
 // Funktion zum Leeren der Suche
@@ -88,6 +90,27 @@ function handleSearchInput() {
   searchTimeout = setTimeout(searchPerfumes, 300); // 300ms Verzögerung
 }
 
+// Funktion zum Speichern der Parfüm-ID in localStorage
+function togglePerfumeSave(perfumeId, buttonElement) {
+  if (savedPerfumeIds.includes(perfumeId)) {
+    // Entferne die ID, wenn sie bereits gespeichert ist
+    savedPerfumeIds = savedPerfumeIds.filter(id => id !== perfumeId);
+    buttonElement.innerHTML = 'Merken'; // Ändere den Text zu "Merken"
+    buttonElement.classList.remove('bg-green-600', 'text-white');
+    buttonElement.classList.add('bg-green-100', 'text-green-700');
+  } else {
+    // Füge die ID hinzu, wenn sie noch nicht gespeichert ist
+    savedPerfumeIds.push(perfumeId);
+    buttonElement.innerHTML = 'Gemerkt'; // Ändere den Text zu "Gemerkt"
+    buttonElement.classList.remove('bg-green-100', 'text-green-700');
+    buttonElement.classList.add('bg-green-600', 'text-white');
+  }
+
+  // Speichere das Array in localStorage
+  localStorage.setItem('savedPerfumes', JSON.stringify(savedPerfumeIds));
+  updateSavedPerfumeCount(); // Aktualisiere den Zähler der gemerkten Düfte
+}
+
 // Funktion zur Anzeige der Ergebnisse
 function displayResults(results) {
   const resultsDiv = document.getElementById('results');
@@ -128,7 +151,6 @@ function displayResults(results) {
 
       }
 
-
       genderTag.textContent = gender;
       imagePlaceholder.appendChild(genderTag);
 
@@ -136,15 +158,16 @@ function displayResults(results) {
       const textContainer = document.createElement('div');
       resultItem.appendChild(textContainer);
 
-      const nameText = document.createElement('h2');
-      nameText.textContent = perfume.name;
-      nameText.className = "text-lg font-bold";
-      textContainer.appendChild(nameText);
-
       const inspiredText = document.createElement('p');
       inspiredText.textContent = 'Inspiriert von';
       inspiredText.className = "text-xs text-gray-400";
       textContainer.appendChild(inspiredText);
+
+      const nameText = document.createElement('h2');
+      let fname = perfume.name ?? 'xxx';
+      nameText.textContent = fname;
+      nameText.className = "text-lg font-bold";
+      textContainer.appendChild(nameText);
 
       const brandText = document.createElement('p');
       brandText.textContent = perfume.brand ? perfume.brand : 'Unbekannt';
@@ -166,7 +189,17 @@ function displayResults(results) {
 
       const button = document.createElement('button');
       button.className = "inline-flex flex-row-reverse items-center gap-1 rounded-full bg-green-100 fill-white stroke-green-600 stroke-1 p-1 px-3 text-sm font-light text-green-700 hover:bg-slate-100 hover:text-slate-700";
-      button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-4"><path stroke-width="1.5" d="M9.15 5.4C10.42 3.15 11.05 2 12 2c.95 0 1.58 1.14 2.85 3.4l.32.6c.36.64.54.96.83 1.18.28.21.63.29 1.32.45l.64.14c2.46.56 3.69.84 3.98 1.78.3.94-.54 1.92-2.22 3.88l-.43.5c-.48.56-.72.84-.83 1.19-.1.34-.07.71 0 1.46l.07.67c.25 2.62.38 3.93-.39 4.51-.76.58-1.91.05-4.22-1l-.6-.28c-.65-.3-.97-.46-1.32-.46-.35 0-.67.16-1.33.46l-.6.27c-2.3 1.06-3.45 1.6-4.21 1.01-.77-.58-.64-1.89-.4-4.5l.07-.68c.08-.75.11-1.12 0-1.46-.1-.35-.34-.63-.82-1.18l-.43-.51c-1.68-1.96-2.52-2.94-2.22-3.88.29-.94 1.52-1.22 3.98-1.78l.64-.14c.7-.16 1.04-.24 1.32-.45.29-.22.47-.54.83-1.18l.32-.6Z" /></svg><span class="text-xs font-light uppercase">gemerkt</span>`;
+      
+      // Setze den Text basierend auf dem gespeicherten Status
+      if (savedPerfumeIds.includes(perfume.id)) {
+        button.innerHTML = 'Gemerkt';
+        button.classList.remove('bg-green-100', 'text-green-700');
+        button.classList.add('bg-green-600', 'text-white');
+      } else {
+        button.innerHTML = 'Merken';
+      }
+
+      button.addEventListener('click', () => togglePerfumeSave(perfume.id, button));
       footer.appendChild(button);
 
       resultItem.appendChild(footer);
@@ -175,7 +208,21 @@ function displayResults(results) {
   }
 }
 
-// Funktion zum Filtern nach Geschlecht
+// Funktion zum Zählen der gemerkten Parfüms und zur Anzeige des Zählers
+function updateSavedPerfumeCount() {
+  const savedPerfumeCount = savedPerfumeIds.length;
+  const fixedFooter = document.getElementById('fixed-footer');
+
+  if (savedPerfumeCount > 0) {
+    // Zeige den Zähler und den Link an
+    fixedFooter.innerHTML = `<a href="selected.html" class="text-white">Gemerkt: ${savedPerfumeCount} Düfte ansehen</a>`;
+    fixedFooter.style.display = 'block';
+  } else {
+    // Verstecke das Feld, wenn keine Düfte gemerkt sind
+    fixedFooter.style.display = 'none';
+  }
+}
+
 // Funktion zum Filtern nach Geschlecht
 function filterByGender(gender) {
   selectedGender = gender;
@@ -208,6 +255,5 @@ function filterByGender(gender) {
   }
 }
 
-  
 // Starte die Anwendung, indem die Parfüm-Daten geladen werden
 loadPerfumeData();
