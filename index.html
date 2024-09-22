@@ -11,6 +11,7 @@
     <link rel="manifest" href="/img/fav/site.webmanifest">
     <link rel="mask-icon" href="/img/fav/safari-pinned-tab.svg" color="#556670">
     <link rel="shortcut icon" href="/img/fav/favicon.ico">
+    <link rel="stylesheet" href="style.css">
     <meta name="apple-mobile-web-app-title" content="Flaverio">
     <meta name="application-name" content="Flaverio">
     <meta name="msapplication-TileColor" content="#00aba9">
@@ -20,12 +21,20 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-gradient-to-tr from-slate-200 to-slate-100 min-h-screen bg-fixed">
+<body  class="bg-gradient-to-tr from-slate-200 to-slate-100 min-h-screen bg-fixed relative">
 
     <div class="text-xs text-slate-100 text-center bg-black p-1.5">
          <span class="opacity-50">Versand kostenlos</span> 📦 <span class="opacity-50">ab € 49</span>
     </div>
 
+
+    <div id="menuToggle">
+    <button id="menuButton" class="size-12 bg-gray-300 absolute p-2">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <path stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+    </button>
+    </div>
 
     <img src="img/flaverio-logo-full.svg" class=" mx-auto h-24 my-6" alt="">
 
@@ -63,6 +72,8 @@
     <div id="fixed-footer" style="display:none; left:0; position:fixed; bottom:0; width:100%; background-color:black; color:white; text-align:center; padding:10px;"></div>
 
 
+
+    <script src="main.js" defer></script>
     <script src="script.js"></script>
 
 </body>
