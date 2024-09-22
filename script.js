@@ -126,7 +126,7 @@ function togglePerfumeSave(perfumeId, buttonElement) {
     // Füge die ID hinzu, wenn sie noch nicht gespeichert ist
     savedPerfumeIds.push(perfumeId);
     buttonElement.innerHTML = 'gemerkt'; // Ändere den Text zu "Gemerkt"
-    buttonElement.classList.remove('bg-gray-100', 'text-green-700');
+    buttonElement.classList.remove('bg-gray-100', 'text-gray-700');
     buttonElement.classList.add('bg-green-600', 'text-white');
   }
 
@@ -213,7 +213,8 @@ function displayResults(results) {
       footer.appendChild(priceText);
 
       const button = document.createElement('button');
-      button.className = "inline-flex flex-row-reverse items-center gap-1 rounded-full bg-gray-100 fill-white stroke-green-600 stroke-1 p-1 px-3 text-sm font-light ";
+      button.className = `inline-flex items-center
+      rounded-full bg-gray-100 p-1 px-3 text-sm font-light`;
       
       // Setze den Text basierend auf dem gespeicherten Status
       if (savedPerfumeIds.includes(perfume.id)) {

@@ -131,7 +131,7 @@
         quantitySection.id = `quantity-section-${perfume.id}`;
 
         const hr = document.createElement('hr');
-        hr.className = 'block py-1';
+        hr.className = 'block py-1 mt-2';
         quantitySection.appendChild(hr);
 
         const extraitText = document.createElement('h3');
@@ -140,7 +140,7 @@
 
         const idText = document.createElement('h4');
         idText.className = 'text-xs text-gray-400';
-        idText.textContent = `Von Flaverio (ID: ${perfume.id})`;
+        idText.textContent = `Nr. ${perfume.id}  | von Flaverio`;
         quantitySection.appendChild(idText);
 
         const sizeContainer = document.createElement('div');
@@ -187,7 +187,7 @@
         quantitySection.appendChild(sizeContainer);
 
         const totalPriceContainer = document.createElement('div');
-        totalPriceContainer.className = 'mt-3 flex items-center';
+        totalPriceContainer.className = 'mt-3 flex justify-between items-center';
         const totalPrice = document.createElement('div');
         totalPrice.className = 'flex gap-2 px-0.5 text-xl *:rounded-full *:px-1.5 total-price';
         totalPrice.textContent = '€ 9.90';
@@ -214,18 +214,29 @@
       section.classList.toggle('hidden');
     }
 
-    // Funktion zum Anpassen des Preises basierend auf der ausgewählten Größe
-    function updatePrice(id, selectedButton) {
-      const price = selectedButton.dataset.price;
-      const allButtons = selectedButton.parentElement.querySelectorAll('span');
-      allButtons.forEach(button => {
-        button.classList.remove('bg-black', 'text-white');
-        button.classList.add('bg-gray-200', 'text-black');
-      });
-      selectedButton.classList.add('bg-black', 'text-white');
-      document.getElementById(`total-price-${id}`).textContent = `€ ${price}`;
-      updateTotalPrice();
-    }
+// Funktion zum Anpassen des Preises basierend auf der ausgewählten Größe
+function updatePrice(id, selectedButton) {
+  const price = selectedButton.dataset.price;
+  
+  // Alle span-Buttons unter dem gleichen Elternteil finden
+  const allButtons = selectedButton.parentElement.querySelectorAll('span');
+
+  // Zuerst alle Buttons auf den Standard zurücksetzen
+  allButtons.forEach(button => {
+    button.classList.remove('bg-black', 'text-white');  // Entfernt ausgewählten Zustand
+    button.classList.add('bg-gray-200', 'text-black');  // Setzt Standardzustand
+  });
+
+  // Den ausgewählten Button hervorheben
+  selectedButton.classList.remove('bg-gray-200', 'text-black');  // Entfernt Standardzustand
+  selectedButton.classList.add('bg-black', 'text-white');  // Setzt ausgewählten Zustand
+
+  // Den Preis auf die ausgewählte Größe aktualisieren
+  document.getElementById(`total-price-${id}`).textContent = `€ ${price}`;
+  
+  // Optional: Aktualisiere den Gesamttotalpreis (wenn diese Funktion nötig ist)
+  updateTotalPrice();
+}
 
     // Funktion zum Aktualisieren der Menge
     function updateQuantity(id, delta) {
