@@ -38,21 +38,23 @@ async function loadPerfumeData() {
 
   // Überprüfen, ob ein gespeicherter Suchbegriff existiert
   const savedSearchQuery = localStorage.getItem('searchQuery');
-  if (savedSearchQuery) {
-    const searchBar = document.getElementById('searchBar');
-    searchBar.value = savedSearchQuery; // Setze den gespeicherten Suchbegriff ins Suchfeld
-    
-    // Zeige den Clear-Button, wenn der Suchbegriff mindestens 2 Zeichen hat
-    const clearButton = document.getElementById('clearSearch');
-    if (savedSearchQuery.length >= 2) {
-      clearButton.classList.remove('hidden');
-    }
+  const searchBar = document.getElementById('searchBar');
+  const clearButton = document.getElementById('clearSearch');
 
+  // Wenn der gespeicherte Suchbegriff vorhanden ist und mindestens 2 Zeichen lang ist
+  if (savedSearchQuery && savedSearchQuery.length >= 2) {
+    searchBar.value = savedSearchQuery; // Setze den gespeicherten Suchbegriff ins Suchfeld
+    clearButton.classList.remove('hidden'); // Zeige den Clear-Button an
     searchPerfumes(); // Führe die Suche durch
+  } else {
+    // Wenn der gespeicherte Suchbegriff leer ist, verberge den Clear-Button
+    searchBar.value = ''; // Setze das Suchfeld auf leer
+    clearButton.classList.add('hidden'); // Verstecke den Clear-Button
   }
 
   updateSavedPerfumeCount(); // Aktualisiere den Zähler nach dem Laden der Seite
 }
+
 
 
 // Funktion zum Leeren der Suche
@@ -63,6 +65,9 @@ function clearSearch() {
   searchBar.value = ''; // Suchfeld leeren
   document.getElementById('results').innerHTML = ''; // Ergebnisse leeren
   clearButton.classList.add('hidden'); // Löschen-Button verstecken
+
+  // Setze den Suchbegriff im localStorage auf einen leeren Wert
+  localStorage.setItem('searchQuery', '');
 }
 
 // Funktion zur Durchführung der Suche (nach einer Verzögerung)
@@ -252,9 +257,9 @@ function filterByGender(gender) {
 
   // Alle Buttons zurücksetzen (weiß mit grauem Text)
   document.getElementById('btn-all').classList.remove('bg-[#38393a]', 'text-white');
-  document.getElementById('btn-w').classList.remove('bg-[#38393a]', 'text-white');
-  document.getElementById('btn-m').classList.remove('bg-[#38393a]', 'text-white');
-  document.getElementById('btn-x').classList.remove('bg-[#38393a]', 'text-white');
+  document.getElementById('btn-w').classList.remove('bg-pink-500', 'text-white');
+  document.getElementById('btn-m').classList.remove('bg-blue-500', 'text-white');
+  document.getElementById('btn-x').classList.remove('bg-green-500', 'text-white');
 
   document.getElementById('btn-all').classList.add('bg-white', 'text-gray-800');
   document.getElementById('btn-w').classList.add('bg-white', 'text-gray-800');
@@ -266,13 +271,13 @@ function filterByGender(gender) {
     document.getElementById('btn-all').classList.add('bg-[#38393a]', 'text-white');
     document.getElementById('btn-all').classList.remove('bg-white', 'text-gray-800');
   } else if (gender === 'female') {
-    document.getElementById('btn-w').classList.add('bg-[#38393a]', 'text-white');
+    document.getElementById('btn-w').classList.add('bg-pink-500', 'text-white');
     document.getElementById('btn-w').classList.remove('bg-white', 'text-gray-800');
   } else if (gender === 'male') {
-    document.getElementById('btn-m').classList.add('bg-[#38393a]', 'text-white');
+    document.getElementById('btn-m').classList.add('bg-blue-500', 'text-white');
     document.getElementById('btn-m').classList.remove('bg-white', 'text-gray-800');
   } else if (gender === 'unisex') {
-    document.getElementById('btn-x').classList.add('bg-[#38393a]', 'text-white');
+    document.getElementById('btn-x').classList.add('bg-green-500', 'text-white');
     document.getElementById('btn-x').classList.remove('bg-white', 'text-gray-800');
   }
 }
