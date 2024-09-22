@@ -38,23 +38,21 @@ async function loadPerfumeData() {
 
   // Überprüfen, ob ein gespeicherter Suchbegriff existiert
   const savedSearchQuery = localStorage.getItem('searchQuery');
-  const searchBar = document.getElementById('searchBar');
-  const clearButton = document.getElementById('clearSearch');
-
-  // Wenn der gespeicherte Suchbegriff vorhanden ist und mindestens 2 Zeichen lang ist
-  if (savedSearchQuery && savedSearchQuery.length >= 2) {
+  if (savedSearchQuery) {
+    const searchBar = document.getElementById('searchBar');
     searchBar.value = savedSearchQuery; // Setze den gespeicherten Suchbegriff ins Suchfeld
-    clearButton.classList.remove('hidden'); // Zeige den Clear-Button an
+    
+    // Zeige den Clear-Button, wenn der Suchbegriff mindestens 2 Zeichen hat
+    const clearButton = document.getElementById('clearSearch');
+    if (savedSearchQuery.length >= 2) {
+      clearButton.classList.remove('hidden');
+    }
+
     searchPerfumes(); // Führe die Suche durch
-  } else {
-    // Wenn der gespeicherte Suchbegriff leer ist, verberge den Clear-Button
-    searchBar.value = ''; // Setze das Suchfeld auf leer
-    clearButton.classList.add('hidden'); // Verstecke den Clear-Button
   }
 
   updateSavedPerfumeCount(); // Aktualisiere den Zähler nach dem Laden der Seite
 }
-
 
 
 // Funktion zum Leeren der Suche
@@ -121,14 +119,14 @@ function togglePerfumeSave(perfumeId, buttonElement) {
   if (savedPerfumeIds.includes(perfumeId)) {
     // Entferne die ID, wenn sie bereits gespeichert ist
     savedPerfumeIds = savedPerfumeIds.filter(id => id !== perfumeId);
-    buttonElement.innerHTML = 'Merken'; // Ändere den Text zu "Merken"
+    buttonElement.innerHTML = 'merken'; // Ändere den Text zu "Merken"
     buttonElement.classList.remove('bg-green-600', 'text-white');
-    buttonElement.classList.add('bg-green-100', 'text-green-700');
+    buttonElement.classList.add('bg-gray-100', 'text-gray-700');
   } else {
     // Füge die ID hinzu, wenn sie noch nicht gespeichert ist
     savedPerfumeIds.push(perfumeId);
-    buttonElement.innerHTML = 'Gemerkt'; // Ändere den Text zu "Gemerkt"
-    buttonElement.classList.remove('bg-green-100', 'text-green-700');
+    buttonElement.innerHTML = 'gemerkt'; // Ändere den Text zu "Gemerkt"
+    buttonElement.classList.remove('bg-gray-100', 'text-green-700');
     buttonElement.classList.add('bg-green-600', 'text-white');
   }
 
@@ -215,15 +213,15 @@ function displayResults(results) {
       footer.appendChild(priceText);
 
       const button = document.createElement('button');
-      button.className = "inline-flex flex-row-reverse items-center gap-1 rounded-full bg-green-100 fill-white stroke-green-600 stroke-1 p-1 px-3 text-sm font-light text-green-700 hover:bg-slate-100 hover:text-slate-700";
+      button.className = "inline-flex flex-row-reverse items-center gap-1 rounded-full bg-gray-100 fill-white stroke-green-600 stroke-1 p-1 px-3 text-sm font-light ";
       
       // Setze den Text basierend auf dem gespeicherten Status
       if (savedPerfumeIds.includes(perfume.id)) {
-        button.innerHTML = 'Gemerkt';
-        button.classList.remove('bg-green-100', 'text-green-700');
+        button.innerHTML = 'gemerkt';
+        button.classList.remove('bg-gray-100', 'text-gray-700');
         button.classList.add('bg-green-600', 'text-white');
       } else {
-        button.innerHTML = 'Merken';
+        button.innerHTML = 'merken';
       }
 
       button.addEventListener('click', () => togglePerfumeSave(perfume.id, button));
