@@ -1,3 +1,4 @@
+const MAX_RESULTS = 7;
 let perfumes = [];
 let fuse;
 let selectedGender = 'all'; // Standard: Alle Gender
@@ -8,7 +9,7 @@ let savedPerfumeIds = JSON.parse(localStorage.getItem('savedPerfumes')) || []; /
 const options = {
   includeScore: true, // Zeigt den Score an, damit wir sehen, wie relevant jedes Ergebnis ist
   shouldSort: true,   // Sortiert die Ergebnisse nach Relevanz
-  threshold: 0.6,     // Eine niedrigere Schwelle, damit nur sehr exakte Übereinstimmungen stärker gewichtet werden
+  threshold: 0.4,     // Eine niedrigere Schwelle, damit nur sehr exakte Übereinstimmungen stärker gewichtet werden
   keys: [
     {
       name: "brand",
@@ -34,8 +35,25 @@ async function loadPerfumeData() {
   } catch (error) {
     console.error('Fehler beim Laden der Parfüm-Daten:', error);
   }
+
+  // Überprüfen, ob ein gespeicherter Suchbegriff existiert
+  const savedSearchQuery = localStorage.getItem('searchQuery');
+  if (savedSearchQuery) {
+    const searchBar = document.getElementById('searchBar');
+    searchBar.value = savedSearchQuery; // Setze den gespeicherten Suchbegriff ins Suchfeld
+    
+    // Zeige den Clear-Button, wenn der Suchbegriff mindestens 2 Zeichen hat
+    const clearButton = document.getElementById('clearSearch');
+    if (savedSearchQuery.length >= 2) {
+      clearButton.classList.remove('hidden');
+    }
+
+    searchPerfumes(); // Führe die Suche durch
+  }
+
   updateSavedPerfumeCount(); // Aktualisiere den Zähler nach dem Laden der Seite
 }
+
 
 // Funktion zum Leeren der Suche
 function clearSearch() {
@@ -63,11 +81,12 @@ function searchPerfumes() {
 
   // Filtere die Ergebnisse basierend auf dem ausgewählten Geschlecht
   if (selectedGender !== 'all') {
+    scrollToElementWithDynamicOffset("results","querybox");
     results = results.filter(perfume => perfume.gender === selectedGender);
   }
 
   // Zeige maximal 10 Ergebnisse
-  results = results.slice(0, 10);
+  results = results.slice(0, MAX_RESULTS);
 
   displayResults(results);
 }
@@ -78,17 +97,19 @@ function handleSearchInput() {
   const clearButton = document.getElementById('clearSearch');
   const searchString = searchBar.value.trim();
 
-  // Wenn mindestens 2 Zeichen im Suchfeld sind, zeige den Löschen-Button an
+  // Speichere den aktuellen Suchbegriff in localStorage
+  localStorage.setItem('searchQuery', searchString);
+
   if (searchString.length >= 2) {
     clearButton.classList.remove('hidden');
   } else {
     clearButton.classList.add('hidden');
   }
 
-  // Suchfunktion mit Verzögerung ausführen
   clearTimeout(searchTimeout);
   searchTimeout = setTimeout(searchPerfumes, 300); // 300ms Verzögerung
 }
+
 
 // Funktion zum Speichern der Parfüm-ID in localStorage
 function togglePerfumeSave(perfumeId, buttonElement) {
@@ -253,6 +274,23 @@ function filterByGender(gender) {
   } else if (gender === 'unisex') {
     document.getElementById('btn-x').classList.add('bg-[#38393a]', 'text-white');
     document.getElementById('btn-x').classList.remove('bg-white', 'text-gray-800');
+  }
+}
+
+// ScrollTo Fuktion
+function scrollToElementWithDynamicOffset(targetId, offsetElementId) {
+  const targetElement = document.getElementById(targetId);
+  const offsetElement = document.getElementById(offsetElementId);
+
+  if (targetElement && offsetElement) {
+    const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+    const offset = offsetElement.offsetHeight + 18; // Höhe des Offset-Elements (querybox)
+    const offsetPosition = elementPosition - offset;
+
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: 'smooth' // Smooth scrolling animation
+    });
   }
 }
 
