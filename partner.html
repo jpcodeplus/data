@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parfüm-Suche</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/fav/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/fav/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/img/fav/favicon-16x16.png">
+    <link rel="manifest" href="/img/fav/site.webmanifest">
+    <link rel="mask-icon" href="/img/fav/safari-pinned-tab.svg" color="#556670">
+    <link rel="shortcut icon" href="/img/fav/favicon.ico">
+    <meta name="apple-mobile-web-app-title" content="Flaverio">
+    <meta name="application-name" content="Flaverio">
+    <meta name="msapplication-TileColor" content="#00aba9">
+    <meta name="msapplication-config" content="/img/fav/browserconfig.xml">
+    <meta name="theme-color" content="#3d3b3b">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+    <body class="bg-gradient-to-tr from-slate-200 to-slate-100 min-h-screen bg-fixed text-[#38393a]">
+
+        <div id="menuToggle">
+            <button id="menuButton" class="size-12 bg-gray-300 absolute p-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <path stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                  </svg>
+            </button>
+            </div>
+
+        <img src="img/flaverio-logo-full.svg" class="mx-auto h-24 my-6" alt="">
+      
+        <h1 class="sticky py-3 flex items-center gap-2 top-0 bg-gradient-to-t from-white to-transparent z-10 shadow-sm backdrop-blur-md">
+          <a href="index.html" class="flex bg-[#38393a] rounded-e-full py-3 px-3 pr-6">
+            <img src="img/flaverio-logo-sm.svg" class="h-5" alt="">
+          </a>
+          <span class="text-xl font-semibold">Partner Login</span>
+        </h1>
+
+<main class="p-4">
+  <section class="mx-auto max-w-lg lg:py-0 mt-4">
+    <div class="w-full rounded-lg sm:max-w-md md:mt-0 xl:p-0">
+      <div class="space-y-4 md:space-y-6">
+        
+        <form class="space-y-4 md:space-y-6" action="#">
+          <div>
+            <label for="email" class="mb-2 block text-sm">E-Mail</label>
+            <input type="email" name="email" id="email" class="focus:ring-gray-600 focus:border-primary-600 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900" 
+            placeholder="partner@flaverio.com" required="" />
+          </div>
+          <div>
+            <label for="password" class="mb-2 block text-sm">Passwort</label>
+            <input type="password" name="password" id="password" placeholder="••••••••" class="focus:ring-gray-600 focus:border-primary-600 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5" required="" />
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-start">
+              <div class="flex h-5 items-center">
+                <input id="remember" aria-describedby="remember" type="checkbox" class="focus:ring-3 focus:ring-gray-300 h-4 w-4 rounded border border-gray-300 bg-gray-50" required="" />
+              </div>
+              <div class="ml-3 text-sm">
+                <label for="remember" class="text-xs text-gray-500">Angemeldet bleiben</label>
+              </div>
+            </div>
+            <a href="#" class="text-primary-600 text-xs font-medium hover:underline"> Password vergessen?</a>
+          </div>
+          <button type="submit" class="bg-primary-600 hover:bg-primary-700 focus:ring-gray-300 w-full rounded-lg bg-blue-500 border-b-2 border-blue-800 px-5 py-2.5 text-center text-sm font-medium text-white focus:outline-none focus:ring-4">Anmelden</button>
+        </form>
+      </div>
+    </div>
+  </section>
+  
+</main>
+
+
+
+
+        <script src="about.js" defer></script>
+        <script src="main.js" defer></script>
+
+</body>
+
+</html>

@@ -15,11 +15,11 @@ const links = [
 },
 {
     "label": "FAQs",
-    "link": "about.html"
+    "link": "faq.html"
 },
 {
     "label": "Partner Login",
-    "link": "services.html"
+    "link": "partner.html"
 }];
 
 menuButton.addEventListener("click", function() {
